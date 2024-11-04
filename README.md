@@ -9,6 +9,10 @@ L’objectif de ce projet est de modéliser l’usage optimal des pesticides dan
 Ce projet s'inscrit dans un cas d'utilisation réel, utilisant un ensemble de données qui capture divers paramètres agricoles (pays, produit, précipitations, température, etc.).
 
 ## Dataset
+
+### Fichier de données
+- **Nom du fichier** : `data.csv`
+
 Le dataset contient 28,242 enregistrements avec les colonnes suivantes :
 - **Pays (Area)** : Catégorielle
 - **Produit (Item)** : Catégorielle
