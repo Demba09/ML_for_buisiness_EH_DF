@@ -40,21 +40,26 @@ Après des itérations d’optimisation des hyperparamètres et des fonctionnali
 
 ### Choix et Comparaison des Modèles
 Plusieurs modèles ont été testés et comparés, avec des ajustements d’hyperparamètres pour maximiser les performances et limiter l’overfitting. Une colonne `Pesticide_Class` a également été ajoutée pour classer les quantités de pesticides.
+---
 
 ## Utilisation
+
 Pour exécuter ce projet, suivez ces instructions :
 
-1. **Installation des dépendances** :
-   ```bash
-   pip install -r requirements.txt
-   ```
+### 1. Installation des dépendances
 
-2. **Exécution du script** :
-   ```bash
-   python script.py
-   ```
+Installez les dépendances nécessaires en exécutant la commande suivante :
 
-Ce script charge le dataset, entraîne un modèle et enregistre les résultats dans `out/score.txt`.
+```bash
+pip install -r requirements.txt
+```
 
-## Auteurs
-Projet présenté par **Erwan Houacine** et **Demba Fofana** (ED Corp.).
+### 2. Exécution du script
+
+Lancez le script principal avec la commande suivante :
+
+```bash
+python script.py
+```
+
+Ce script charge le dataset, entraîne un modèle, et enregistre automatiquement les résultats (métriques, courbes, modèles, etc.) dans MLflow. Vous pouvez consulter ces résultats dans l’interface MLflow pour une analyse complète des performances du modèle.
