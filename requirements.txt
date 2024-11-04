@@ -1,0 +1,16 @@
+# Data manipulation
+pandas==1.4.3
+numpy==1.23.0
+
+# Data visualization
+matplotlib==3.5.2
+seaborn==0.11.2
+logging
+
+# Preprocessing and model selection
+scikit-learn==1.1.1
+xgboost==1.5.2
+scipy==1.8.1
+
+# Model tracking
+mlflow==1.26.1
