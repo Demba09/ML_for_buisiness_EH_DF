@@ -920,27 +920,3 @@ print(f"Validation croisée (10 plis) - Accuracy écart-type : {cv_scores.std():
 # Enregistrement des résultats dans MLflow
 mlflow.log_metric("Mean CV Accuracy", cv_scores.mean())
 mlflow.log_metric("CV Accuracy STD", cv_scores.std())
-
-# Créer le répertoire 'out' s'il n'existe pas
-os.makedirs("out", exist_ok=True)
-
-# Effectuer la validation croisée
-cv_scores = cross_val_score(xgb_model, X_train, y_train, cv=10, scoring='accuracy')
-mean_cv_accuracy = cv_scores.mean()
-std_cv_accuracy = cv_scores.std()
-
-# Affichage des résultats
-print(f"Validation croisée (10 plis) - Accuracy moyenne : {mean_cv_accuracy:.4f}")
-print(f"Validation croisée (10 plis) - Accuracy écart-type : {std_cv_accuracy:.4f}")
-
-# Enregistrement des résultats dans MLflow
-mlflow.log_metric("Mean CV Accuracy", mean_cv_accuracy)
-mlflow.log_metric("CV Accuracy STD", std_cv_accuracy)
-
-# Écriture des scores dans 'out/score.txt'
-with open("out/score.txt", "w") as file:
-    file.write(f"Validation croisée (10 plis) - Accuracy moyenne : {mean_cv_accuracy:.4f}\n")
-    file.write(f"Validation croisée (10 plis) - Accuracy écart-type : {std_cv_accuracy:.4f}\n")
-    file.write(f"Accuracy du test : {accuracy_test:.4f}\n")
-    file.write(f"F1 Score du test : {f1_test:.4f}\n")
-    file.write(f"AUC-ROC du test : {roc_auc_test:.4f}\n")
