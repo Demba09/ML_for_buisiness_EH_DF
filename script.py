@@ -18,7 +18,7 @@ from sklearn.metrics import (
 )
 from sklearn.preprocessing import StandardScaler
 from sklearn.inspection import permutation_importance
-from xgboost import XGBClassifier
+from xgboost import XGBClassifier 
 from sklearn.datasets import load_iris, make_regression
 
 # Définir l'URI de suivi - par défaut, ou local pour éviter des problèmes de chemin
@@ -328,22 +328,59 @@ def optimize_gb(trial, X, y):
     score = cross_val_score(model, X, y, cv=5, scoring='neg_mean_squared_error').mean()
     return score
 
-# Optimisation du modèle
 def optimize_model(model_type, X, y, n_trials=20):
+    # Créer une étude Optuna
     study = optuna.create_study(direction='maximize')
+
+    # Définir la fonction objectif en incluant le démarrage d'un run MLflow
+    def objective(trial):
+        # Démarrer un nouveau run MLflow pour chaque essai
+        with mlflow.start_run(nested=True):
+            if model_type == 'RandomForest':
+                # Définir les hyperparamètres à optimiser
+                param = {
+                    'n_estimators': trial.suggest_int('n_estimators', 100, 300),
+                    'max_depth': trial.suggest_int('max_depth', 10, 30),
+                    'min_samples_split': trial.suggest_int('min_samples_split', 2, 10),
+                    'min_samples_leaf': trial.suggest_int('min_samples_leaf', 1, 4),
+                    'random_state': 42,
+                    'n_jobs': -1
+                }
+                model = RandomForestRegressor(**param)
+            elif model_type == 'GradientBoosting':
+                param = {
+                    'n_estimators': trial.suggest_int('n_estimators', 100, 300),
+                    'max_depth': trial.suggest_int('max_depth', 3, 10),
+                    'learning_rate': trial.suggest_float('learning_rate', 0.01, 0.2, log=True),
+                    'random_state': 42
+                }
+                model = GradientBoostingRegressor(**param)
+            else:
+                raise ValueError("Type de modèle non supporté.")
+
+            # Effectuer la validation croisée
+            score = cross_val_score(model, X, y, cv=5, scoring='neg_mean_squared_error').mean()
+
+            # Enregistrer les hyperparamètres et le score dans MLflow
+            mlflow.log_params(param)
+            mlflow.log_metric('MSE', -score)
+
+            return score
+
+    # Démarrer un run MLflow pour l'optimisation globale
     with mlflow.start_run(run_name=f"Optimisation {model_type}"):
-        if model_type == 'RandomForest':
-            study.optimize(lambda trial: optimize_rf(trial, X, y), n_trials=n_trials)
-        elif model_type == 'GradientBoosting':
-            study.optimize(lambda trial: optimize_gb(trial, X, y), n_trials=n_trials)
+        study.optimize(objective, n_trials=n_trials)
+
+        # Enregistrer les meilleurs hyperparamètres
+        mlflow.log_params(study.best_params)
+        mlflow.log_metric(f"Best_MSE_{model_type}", -study.best_value)
 
         print(f"\nMeilleurs paramètres pour {model_type}:")
         for key, value in study.best_params.items():
             print(f"  {key}: {value}")
-            mlflow.log_param(key, value)
-        mlflow.log_metric(f"Best_MSE_{model_type}", -study.best_value)
 
     return study.best_params, study
+
 
 # Entraînement et évaluation du modèle
 def train_model(model_class, params, X_train, y_train):

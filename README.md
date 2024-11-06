@@ -26,6 +26,12 @@ Licence du dataset : **CC0: Public Domain**
 
 Ce dataset est utilisé pour prédire la quantité optimale de pesticides en fonction des cultures et des conditions climatiques.
 
+## Prérequis
+
+- **Python 3.10.13**
+- **CMake** (doit être installé sur votre système)
+
+
 ## Méthodologie
 Ce projet utilise des techniques de **régression** pour prédire la quantité de pesticides et de **classification** pour vérifier si cette quantité dépasse un seuil critique défini. 
 

@@ -6,7 +6,6 @@ numpy==1.23.0
 matplotlib==3.5.2
 seaborn==0.11.2
 plotly==5.3.1  # Ajouté pour les visualisations Optuna
-logging  # Inclut dans Python, pas besoin d'installation
 
 # Preprocessing and model selection
 scikit-learn==1.1.1
