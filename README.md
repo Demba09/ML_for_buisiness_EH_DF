@@ -28,7 +28,7 @@ Ce dataset est utilisé pour prédire la quantité optimale de pesticides en fon
 
 ## Prérequis
 
-- **Python 3.10.13**
+- **Python 3.10.11**
 - **CMake** (doit être installé sur votre système)
 
 
@@ -73,3 +73,14 @@ python script.py
 ```
 
 Ce script charge le dataset, entraîne un modèle, et enregistre automatiquement les résultats (métriques, courbes, modèles, etc.) dans MLflow. Vous pouvez consulter ces résultats dans l’interface MLflow pour une analyse complète des performances du modèle.
+
+## Résultats
+
+### Fichier de Scores
+
+Après avoir exécuté le script principal (`script.py`), les métriques d'évaluation de chaque modèle entraîné sont enregistrées dans le fichier `out/score.txt`. Ce fichier fournit un résumé des performances des différents modèles, facilitant ainsi la comparaison et l'analyse des résultats.
+
+
+### Contenu du Fichier `out/score.txt`
+
+Le fichier `score.txt` contient des informations structurées sous forme de paires clé-valeur, représentant les différentes métriques calculées pour chaque modèle. 

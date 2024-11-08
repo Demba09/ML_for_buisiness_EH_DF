@@ -21,6 +21,24 @@ from sklearn.inspection import permutation_importance
 from xgboost import XGBClassifier 
 from sklearn.datasets import load_iris, make_regression
 
+if not os.path.exists('out'):
+    os.makedirs('out')
+
+file_path = 'out/score.txt'
+
+def write_metrics_to_file(metrics_dict, file_path='out/score.txt'):
+    """
+    Écrit les métriques dans un fichier texte.
+
+    Args:
+        metrics_dict (dict): Dictionnaire contenant les métriques à écrire.
+        file_path (str): Chemin du fichier où les métriques seront écrites.
+    """
+    with open(file_path, 'a') as file:
+        for metric_name, value in metrics_dict.items():
+            file.write(f"{metric_name}: {value}\n")
+    print(f"Métriques sauvegardées dans {file_path}")
+
 # Définir l'URI de suivi - par défaut, ou local pour éviter des problèmes de chemin
 tracking_uri = mlflow.get_tracking_uri()
 print(f"Tracking URI: {tracking_uri}")
@@ -49,7 +67,7 @@ def load_data(file_path):
     except FileNotFoundError:
         print(f"Erreur : fichier {file_path} introuvable.")
         sys.exit(1)
-
+ 
 # Prétraitement des données
 def preprocess_data(df):
     features = ['hg/ha_yield', 'average_rain_fall_mm_per_year', 'avg_temp']
@@ -90,6 +108,13 @@ def main(file_path):
         # Afficher les métriques
         print(f"R2 Score: {r2:.4f}")
         print(f"RMSE: {rmse:.4f}")
+        
+        metrics = {
+        'Model': 'Linear Regression Baseline',
+        'R2 Score': r2,
+        'RMSE': rmse
+        }
+        write_metrics_to_file(metrics)
 
 if __name__ == "__main__":
     # Permet de passer le chemin du fichier en argument
@@ -165,6 +190,14 @@ def train_and_evaluate_model(X, y):
         print(f"Score R2 moyen de validation croisée: {np.mean(cv_scores):.4f}")
         print(f"Score R2 sur l'ensemble de test: {r2:.4f}")
         print(f"RMSE sur l'ensemble de test: {rmse:.4f}")
+        
+        metrics = {
+        'Model': 'Linear Regression with Cross-Validation',
+        'R2 Score Test': r2,
+        'RMSE Test': rmse,
+        'R2 CV Mean': np.mean(cv_scores)
+        }
+        write_metrics_to_file(metrics)
 
 # Fonction principale
 def main(file_path):
@@ -258,7 +291,13 @@ def train_and_evaluate_models(X, y):
                 'test_r2': test_r2,
                 'test_rmse': test_rmse
             }
-    
+            metrics = {
+            'Model': name,
+            'Mean CV R2': np.mean(cv_scores),
+            'Test R2 Score': test_r2,
+            'Test RMSE': test_rmse
+            }
+            write_metrics_to_file(metrics)
     return results
 
 # Fonction principale
@@ -378,6 +417,11 @@ def optimize_model(model_type, X, y, n_trials=20):
         print(f"\nMeilleurs paramètres pour {model_type}:")
         for key, value in study.best_params.items():
             print(f"  {key}: {value}")
+        
+        metrics = {
+        f'Best MSE {model_type}': -study.best_value
+        }
+        write_metrics_to_file(metrics)
 
     return study.best_params, study
 
@@ -725,6 +769,14 @@ for model_name, model in models.items():
             'accuracy': accuracy,
             'roc_auc': roc_auc
         }
+        metrics = {
+        'Model': model_name,
+        'Mean CV Accuracy': cv_scores.mean(),
+        'CV Accuracy STD': cv_scores.std(),
+        'Test Accuracy': accuracy,
+        'AUC-ROC': roc_auc
+        }
+        write_metrics_to_file(metrics)
 
 # Comparaison des résultats des modèles
 print("\nRésumé des performances des modèles :")
@@ -918,6 +970,16 @@ print(f"\nDifférence d'accuracy entre Train et Test : {accuracy_train - accurac
 print(f"Différence de F1 score entre Train et Test : {f1_train - f1_test:.4f}")
 print(f"Différence d'AUC-ROC entre Train et Test : {roc_auc_train - roc_auc_test:.4f}")
 
+metrics = {
+    'Train Accuracy': accuracy_train,
+    'Train F1 Score': f1_train,
+    'Train AUC-ROC': roc_auc_train,
+    'Test Accuracy': accuracy_test,
+    'Test F1 Score': f1_test,
+    'Test AUC-ROC': roc_auc_test
+}
+write_metrics_to_file(metrics)
+
 def plot_learning_curve(estimator, X, y, title="Courbe d'apprentissage"):
     train_sizes, train_scores, test_scores = learning_curve(
         estimator, X, y, cv=5, n_jobs=-1, train_sizes=np.linspace(0.1, 1.0, 10), scoring='f1'
@@ -943,6 +1005,14 @@ def plot_learning_curve(estimator, X, y, title="Courbe d'apprentissage"):
     plt.savefig(plot_path)
     mlflow.log_artifact(plot_path)
     plt.close()  # Fermer la figure pour éviter d'afficher la courbe dans les environnements avec répétitions de graphiques
+    
+    metrics = {
+    'Model': 'Learning Curve',
+    'Train Sizes': list(train_sizes),
+    'Train Scores Mean': list(train_scores_mean),
+    'Test Scores Mean': list(test_scores_mean)
+    }
+    write_metrics_to_file(metrics)
 
 # Affichage de la courbe d'apprentissage
 plot_learning_curve(xgb_model, X_train, y_train)
