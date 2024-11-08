@@ -11,7 +11,8 @@ Ce projet s'inscrit dans un cas d'utilisation réel, utilisant un ensemble de do
 ## Dataset
 
 ### Fichier de données
-- **Nom du fichier** : `data.csv`
+
+Les données utilisées dans ce projet sont stockées dans le dossier `data`. Le fichier principal est nommé `yield_df.csv`. Assurez-vous que ce fichier est présent dans le dossier avant d'exécuter le script.
 
 Le dataset contient 28,242 enregistrements avec les colonnes suivantes :
 - **Pays (Area)** : Catégorielle
